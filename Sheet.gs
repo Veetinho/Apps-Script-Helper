@@ -83,7 +83,7 @@
 
 function Sheet(spreadsheetId, sheetName){
   try {
-    var _ss = SpreadsheetApp?.openById(spreadsheetId)
+    var _ss = SpreadsheetApp.openById(spreadsheetId)
   } catch (er) {
     console.error(`Spreadsheet with spreadsheet id "${spreadsheetId}" not found`)
   }
@@ -102,7 +102,7 @@ function Sheet(spreadsheetId, sheetName){
       const headers = data.shift()
       return data.map(row => {
         const obj = new Object()
-        for(const col in row) if(headers[col] !== '') obj[headers[col]] = row[col]
+        for(const col in row) if(headers[col].toString().replace(/\s/g, '') !== '') obj[headers[col]] = row[col]
         return obj
       })
     },
