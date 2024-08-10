@@ -5,6 +5,7 @@ class DateFormat {
       ISO: 'yyyy-MM-dd',
       EU: 'dd.MM.yyyy',
       US: 'MM/dd/yyyy',
+      FULL: 'EEE dd MMM yyyy',
       // Add more formats if needed
     }
   }
