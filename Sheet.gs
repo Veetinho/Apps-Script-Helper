@@ -19,6 +19,7 @@ function Sheet(spreadsheetId, sheetName){
       const headers = data.shift()
       return data.map(row => {
         const obj = new Object()
+        obj['row'] = Number(indx) + 2
         for(const col in row) if(headers[col].toString().replace(/\s/g, '') !== '') obj[headers[col]] = row[col]
         return obj
       })
@@ -41,6 +42,23 @@ function Sheet(spreadsheetId, sheetName){
           return item
         }).join(',')
       ).join('\n')
+    },
+
+    getRowDataAsObjectById(recordId){
+      if (!_ws) return null
+      const arr = this.getDataAsArrayOfObjects()
+      const records = arr.filter(v => v.id == recordId)
+      return records.length === 0 ? null : records[0]
+    },
+
+    appendRow(arr){
+      let response = false
+      if (!_ws) return response
+      try {
+        _ws.appendRow(arr.flat())
+        response = true
+      } catch(er) {console.error(er)}
+      return response
     }
   }
 }
