@@ -1,4 +1,4 @@
-function Sheet(spreadsheetId, sheetName){
+function Sheet(sheetName, spreadsheetId = SpreadsheetApp.getActiveSpreadsheet().getId()){
   try {
     var _ss = SpreadsheetApp.openById(spreadsheetId)
   } catch (er) {
