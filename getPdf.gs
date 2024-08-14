@@ -1,3 +1,12 @@
+function sendEmail(user, subject, body, blob) {
+  MailApp.sendEmail({
+    to: user,
+    subject: subject,
+    body: body,
+    attachments: [blob]
+  })
+}
+
 function getPdf(ssId, sheet, newFileName, lr, lc, fr = '1', fc = '1') {
   const response = { success: false, blob: null }
   const url = "https://docs.google.com/spreadsheets/d/" + ssId + "/export" +
