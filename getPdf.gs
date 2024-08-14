@@ -1,3 +1,20 @@
+function createAndSendPdf() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet()
+  const ws = ss.getSheetByName('SHEET_NAME')
+  const data = ws.getDataRange().getDisplayValues()
+  const pdf = getPdf(ss.getId(), ws, 'FILE_NAME', data.length)
+  if(pdf.success == false) return console.warn('Cant get sheet data as pdf')
+  for(const mail of ['example@mail.com', 'anotherexample@mail.com']){
+    sendEmail(
+      mail, 
+      'SUBJECT', 
+      'HERE IS MY PDF FILE', 
+      pdf.blob
+    )
+  }
+}
+
+
 function sendEmail(user, subject, body, blob) {
   MailApp.sendEmail({
     to: user,
