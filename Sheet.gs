@@ -17,7 +17,7 @@ function Sheet(sheetName, spreadsheetId = SpreadsheetApp.getActiveSpreadsheet().
       const data = _ws.getDataRange().getValues()
       if(data.length < 2) return []
       const headers = data.shift()
-      return data.map(row => {
+      return data.map((row, indx) => {
         const obj = new Object()
         obj['row'] = Number(indx) + 2
         for(const col in row) if(headers[col].toString().replace(/\s/g, '') !== '') obj[headers[col]] = row[col]
