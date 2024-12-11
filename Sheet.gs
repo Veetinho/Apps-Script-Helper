@@ -12,6 +12,13 @@ function Sheet(sheetName, spreadsheetId = SpreadsheetApp.getActiveSpreadsheet().
   }
 
   return {
+    getHeaders() {
+      if (!_ws) return []
+      const data = _ws.getDataRange().getValues()
+      if (data.length === 0) return []
+      return data.shift()
+    },
+
     getDataAsArrayOfObjects() {
       if(!_ws) return []
       const data = _ws.getDataRange().getValues()
@@ -55,10 +62,62 @@ function Sheet(sheetName, spreadsheetId = SpreadsheetApp.getActiveSpreadsheet().
       let response = false
       if (!_ws) return response
       try {
+        console.log('appendRow', arr)
         _ws.appendRow(arr.flat())
         response = true
       } catch(er) {console.error(er)}
       return response
-    }
+    },
+
+    addRecord(obj){
+      let response = false
+      if (!_ws) return response
+      try {
+        const headers = this.getHeaders()
+        console.log('headers', headers)
+        if(headers.length === 0) return response
+        const arrToSet = headers.map(v => obj[v] || '')
+        console.log('arrToSet', arrToSet)
+        this.appendRow(arrToSet)
+        response = true
+      } catch (er) { console.error(er) }
+      return response
+    },
+
+    updateFieldsById(id, obj) {
+      let response = false
+      if (!_ws) return response
+      try {
+        const headers = this.getHeaders()
+        if(headers.length === 0) return response
+        const row = this.getRowDataAsObjectById(id)?.row
+        if (row === undefined) return response
+        for (const key in Object(obj)) {
+          const col = 1 + headers.indexOf(key)
+          if (col === 0) return response
+          _ws.getRange(row, col).setValue(obj[key])
+        }
+        response = true
+      } catch (er) { console.error(er) }
+      return response
+    },
+
+    updateRecordById(id, obj) {
+      let response = false
+      if (!_ws) return response
+      try {
+        const headers = this.getHeaders()
+        if(headers.length === 0) return response
+        const row = this.getRowDataAsObjectById(id)?.row
+        if (row === undefined) return response
+        const arrToSet = headers.map(v => {
+          const value = obj[v] === undefined ? [] : [obj[v]]
+          return value
+        })
+        _ws.getRange(row, 1, 1, arrToSet.length).setValues([arrToSet])
+        response = true
+      } catch (er) { console.error(er) }
+      return response
+    },
   }
 }
