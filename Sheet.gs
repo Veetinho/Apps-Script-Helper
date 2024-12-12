@@ -12,6 +12,11 @@ function Sheet(sheetName, spreadsheetId = SpreadsheetApp.getActiveSpreadsheet().
   }
 
   return {
+    getLastRow(){
+      if (!_ws) return -1
+      return _ws.getLastRow()
+    },
+
     getHeaders() {
       if (!_ws) return []
       const data = _ws.getDataRange().getValues()
@@ -81,6 +86,25 @@ function Sheet(sheetName, spreadsheetId = SpreadsheetApp.getActiveSpreadsheet().
       return response
     },
 
+    addRecords(arr){
+      let response = false
+      if (!_ws) return response
+      try {
+        const headers = this.getHeaders()
+        const row = arr.reduce((acc, v) => {
+          if(v.row < acc) acc = v.row
+          return acc
+        }, Infinity)
+        if(headers.length === 0 || row === Infinity) return response
+        const arrToSet = arr.map(item => {
+          return headers.map(v => item[v] || '')
+        })
+        this.setValues(row, 1, arrToSet.length, arrToSet[0].length, arrToSet)
+        response = true
+      } catch (er) { console.error(er) }
+      return response
+    },
+
     updateFieldsById(id, obj) {
       let response = false
       if (!_ws) return response
@@ -111,7 +135,7 @@ function Sheet(sheetName, spreadsheetId = SpreadsheetApp.getActiveSpreadsheet().
           const value = obj[v] === undefined ? [] : [obj[v]]
           return value
         })
-        _ws.getRange(row, 1, 1, arrToSet.length).setValues([arrToSet])
+        this.setValues(row, 1, 1, arrToSet.length, [arrToSet])
         response = true
       } catch (er) { console.error(er) }
       return response
@@ -122,6 +146,16 @@ function Sheet(sheetName, spreadsheetId = SpreadsheetApp.getActiveSpreadsheet().
       if (!_ws) return response
       try {
         _ws.getRange(row, col).setValue(value)
+        response = true
+      } catch (er) { console.error(er) }
+      return response
+    },
+    
+    setValues(row, col, rows = 1, cols = 1, arr){
+      let response = false
+      if (!_ws) return response
+      try {
+        _ws.getRange(row, col, rows, cols).setValues(arr)
         response = true
       } catch (er) { console.error(er) }
       return response
