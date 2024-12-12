@@ -116,5 +116,15 @@ function Sheet(sheetName, spreadsheetId = SpreadsheetApp.getActiveSpreadsheet().
       } catch (er) { console.error(er) }
       return response
     },
+
+    setValue(row, col, value){
+      let response = false
+      if (!_ws) return response
+      try {
+        _ws.getRange(row, col).setValue(value)
+        response = true
+      } catch (er) { console.error(er) }
+      return response
+    },
   }
 }
