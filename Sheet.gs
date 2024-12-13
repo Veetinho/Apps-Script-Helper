@@ -32,7 +32,13 @@ function Sheet(sheetName, spreadsheetId = SpreadsheetApp.getActiveSpreadsheet().
       return data.map((row, indx) => {
         const obj = new Object()
         obj['row'] = Number(indx) + 2
-        for(const col in row) if(headers[col].toString().replace(/\s/g, '') !== '') obj[headers[col]] = row[col]
+        for(const col in row) if(String(headers[col]).replace(/\s/g, '') !== ''){
+          if(String(headers[col]).toLowerCase().includes('date')){
+            obj[headers[col]] = row[col] == '' ? '' : Utilities.formatDate(new Date(row[col]), Session.getScriptTimeZone(), 'yyyy-MM-dd')
+            continue
+          }
+          obj[headers[col]] = row[col]
+        }
         return obj
       })
     },
