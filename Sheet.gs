@@ -32,7 +32,12 @@ function Sheet(sheetName, spreadsheetId = SpreadsheetApp.getActiveSpreadsheet().
       return data.map((row, indx) => {
         const obj = new Object()
         obj['row'] = Number(indx) + 2
-        for(const col in row) if(String(headers[col]).replace(/\s/g, '') !== ''){
+        for(const col in row){
+          if(String(headers[col]).replace(/\s/g, '') == '') continue
+          if(String(headers[col]).toLowerCase().endsWith('edat')){
+            obj[headers[col]] = row[col] == '' ? '' : Utilities.formatDate(new Date(row[col]), Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm')
+            continue
+          }
           if(String(headers[col]).toLowerCase().includes('date')){
             obj[headers[col]] = row[col] == '' ? '' : Utilities.formatDate(new Date(row[col]), Session.getScriptTimeZone(), 'yyyy-MM-dd')
             continue
@@ -97,15 +102,12 @@ function Sheet(sheetName, spreadsheetId = SpreadsheetApp.getActiveSpreadsheet().
       if (!_ws) return response
       try {
         const headers = this.getHeaders()
-        const row = arr.reduce((acc, v) => {
-          if(v.row < acc) acc = v.row
-          return acc
-        }, Infinity)
-        if(headers.length === 0 || row === Infinity) return response
+        let row = this.getLastRow()
+        if(headers.length === 0 || row < 0) return response
         const arrToSet = arr.map(item => {
           return headers.map(v => item[v] || '')
         })
-        this.setValues(row, 1, arrToSet.length, arrToSet[0].length, arrToSet)
+        this.setValues(++row, 1, arrToSet.length, arrToSet[0].length, arrToSet)
         response = true
       } catch (er) { console.error(er) }
       return response
