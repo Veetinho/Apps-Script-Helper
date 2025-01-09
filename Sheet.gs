@@ -12,16 +12,30 @@ function Sheet(sheetName, spreadsheetId = SpreadsheetApp.getActiveSpreadsheet().
   }
 
   return {
-    getLastRow(){
-      if (!_ws) return -1
-      return _ws.getLastRow()
-    },
-
     getHeaders() {
       if (!_ws) return []
       const data = _ws.getDataRange().getValues()
       if (data.length === 0) return []
       return data.shift()
+    },
+
+    getLastRow(){
+      if (!_ws) return -1
+      return _ws.getLastRow()
+    },
+
+    getRowByFields(obj){
+      if (!_ws) return -1
+      const arr = this.getDataAsArrayOfObjects()
+      const record = arr.find(v => {
+        let flag = true
+        for(const key in obj) if(obj[key] != v[key]){
+          flag = false
+          break
+        }
+        return flag === true
+      })
+      return record === undefined ? -1 : record.row
     },
 
     getDataAsArrayOfObjects() {
