@@ -1,0 +1,14 @@
+function getRouteDuration(origin, destination) {
+  let duration = null
+  try {
+    let directions = Maps.newDirectionFinder()
+      .setOrigin(origin)
+      .setDestination(destination)
+      .setMode(Maps.DirectionFinder.Mode.DRIVING)
+      .getDirections()
+    duration = directions.routes[0]?.legs[0]?.duration?.value
+  } catch (err) {
+    console.error(destination, err)
+  }
+  return duration
+}
