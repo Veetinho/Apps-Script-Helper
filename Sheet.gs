@@ -182,5 +182,25 @@ function Sheet(sheetName, spreadsheetId = SpreadsheetApp.getActiveSpreadsheet().
       } catch (er) { console.error(er) }
       return response
     },
+
+    clearRecordByRow(obj){
+      let response = false
+      if (!_ws || isNaN(obj.row)) return response
+      try {
+        _ws.getRange(obj.row, 1, 1, _ws.getMaxColumns()).clearContent()
+        response = true
+      } catch (er) { console.error(er) }
+      return response
+    },
+    
+    clearRange(row, col, rows = 1, cols = 1){
+      let response = false
+      if (!_ws || isNaN(row) || isNaN(col) || row < 1 || col < 1) return response
+      try {
+        _ws.getRange(row, col, rows, cols).clearContent()
+        response = true
+      } catch (er) { console.error(er) }
+      return response
+    },
   }
 }
