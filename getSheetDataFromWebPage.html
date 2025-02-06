@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Load Google Sheet Data as array of objects with Vanilla JS</title>
+</head>
+
+<body>
+  <h3>Load Google Sheet Data as array of objects with Vanilla JS</h3>
+  <script>
+    window.addEventListener("DOMContentLoaded", async (event) => {
+        const sheetId = "1D4fGY6MaGdG9WWCNAXKPdrQSUMBaaGRf951UNl5asRw"
+        const sheetName = "data"
+        const c = await getSheetHeaders(sheetId, sheetName)
+        console.log(c)
+
+        getSheetData({
+          sheetId,
+          sheetName,
+          query: `SELECT ${c.id}, ${c.firstname}, ${c.lastname}, ${c.dateOfBirth}, ${c.phoneNumber}, ${c.pesel} WHERE ${c.countryOfBirth} = 'Uzbekistan'`.toString(),
+          callback: sheetDataHandler,
+        })
+      })
+
+      async function getSheetHeaders(sheetId, sheetName) {
+        const response = await fetch(`https:\/\/docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${sheetName}&range=1:1`)
+        const text = await response.text()
+        const headers = splitRow(text.split('\n')[0])
+        const headersObject = mapHeadersToColumns(headers)
+        return headersObject
+      }
+      
+      function splitRow(row) {
+        return row.split(',').map(val => val.substring(1, val.length - 1))
+      }
+
+      function mapHeadersToColumns(headers) {
+        const getColumnLetter = (index) => {
+          let letter = ""
+          while (index >= 0) {
+              letter = String.fromCharCode((index % 26) + 65) + letter
+              index = Math.floor(index / 26) - 1
+          }
+          return letter
+        }
+        
+        return headers.reduce((acc, header, index) => {
+          acc[header] = getColumnLetter(index)
+          return acc
+        }, {})
+      }
+
+      function sheetDataHandler(sheetData){
+        console.log("sheet data: ", sheetData)
+      }
+
+      function getSheetData({ sheetId, sheetName, query, callback }) {
+        const base = `https:\/\/docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?`
+        const url = `${base}sheet=${encodeURIComponent(sheetName)}&tq=${encodeURIComponent(query)}`
+        fetch(url)
+          .then((res) => res.text())
+          .then((response) => {
+            callback(responseToObjects(response))
+          })
+
+        function responseToObjects(res) {
+          const jsData = JSON.parse(res.substring(47).slice(0, -2))
+          const data = []
+          const columns = jsData.table.cols
+          const rows = jsData.table.rows
+          for (let r = 0; r < rows.length; r++) {
+            const rowObject = {}
+            for (let c = 0; c < columns.length; c++) {
+              const cellData = rows[r]["c"][c]
+              const propName = columns[c].label
+              if (cellData === null) {
+                rowObject[propName] = ""
+              } else if (
+                typeof cellData["v"] == "string" && cellData["v"].startsWith("Date")) {
+                rowObject[propName] = new Date(cellData["f"])
+              } else {
+                rowObject[propName] = cellData["v"]
+              }
+            }
+            data.push(rowObject)
+          }
+          return data
+        }
+      }
+  </script>
+</body>
+
+</html>
