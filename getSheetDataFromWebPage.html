@@ -16,7 +16,7 @@
         const sheetName = "YOUR_SHEET_NAME"
         const c = await getSheetHeadersAsLetters(sheetId, sheetName)
 
-        const query = `SELECT ${c.firstname}, ${c.lastname}, ${c.phoneNumber}, ${c.id} WHERE ${c.gender} = 'Żeńska'`.toString()
+        const query = `SELECT ${c.id}, ${c.firstname}, ${c.lastname}, ${c.phoneNumber}, ${c.email} WHERE ${c.email} CONTAINS 'gmail.com'`.toString()
         const sheetData = await getSheetData({ sheetId, sheetName, query })
         console.log(sheetData)
       })
