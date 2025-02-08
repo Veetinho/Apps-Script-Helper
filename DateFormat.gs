@@ -93,27 +93,3 @@ class DateFormat {
     return Utilities.formatDate(dateObj, timezone, `${locale} HH:mm${isSeconds ? ':ss' : ''}`)
   }
 }
-
-
-function testDateFormat() {
-  console.log(1, DateFormat.date('2000-05-17 22:00 -05:00'))
-  console.log(2, DateFormat.date())
-  console.log(3, DateFormat.date(0))
-  console.log(4, DateFormat.date('thu 17.05.2000'))
-  console.log(5, DateFormat.date('sdf'))
-  console.log(6, DateFormat.date(' // 17/5/2000'))
-  console.log(7, DateFormat.date('17/5/2000'))
-  console.log(8, DateFormat.date('5/17/2000'))
-  console.log(9, DateFormat.date(new Date(132543532543), DateFormat.Locale.EU))
-  console.log(10, DateFormat.date(0, DateFormat.Locale.EU))
-  console.log(11, DateFormat.date(Date.now(), DateFormat.Locale.ISO, DateFormat.Timezone.AEST))
-  console.log(12, DateFormat.date('321543532543', DateFormat.Locale.EU, DateFormat.Timezone.AEST))
-  console.log(13, DateFormat.date('325431532543', 'dfhgsdf', DateFormat.Timezone.CET))
-  console.log(14, DateFormat.date('312543532543', DateFormat.Locale.EU, 4655456))
-
-  console.log(15, DateFormat.dateTime('178954353254', DateFormat.Locale.EU, DateFormat.Timezone.CET, true))
-  console.log(16, DateFormat.dateTime(Date.now()))
-  console.log(17, DateFormat.dateTime('5/17/2000', DateFormat.Locale.EU, DateFormat.Timezone.AEST))
-  console.log(18, DateFormat.dateTime('2000-05-17 22:12:56 -05:00', '', '', true))
-}
-
